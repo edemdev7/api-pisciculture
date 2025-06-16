@@ -5,9 +5,11 @@ import { AppDataSource } from './config/typeorm.config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { BassinsModule } from './bassins/bassins.module';
+import { AlimentsModule } from './aliments/aliments.module';
 import { IntrantsModule } from './intrants/intrants.module';
 import { StocksModule } from './stocks/stocks.module';
 import { MaladiesModule } from './maladies/maladies.module';
+import { RecoltesModule } from './recoltes/recoltes.module';
 
 @Module({
   imports: [
@@ -16,9 +18,11 @@ import { MaladiesModule } from './maladies/maladies.module';
     UsersModule,
     AuthModule,
     BassinsModule,
+    AlimentsModule,
     IntrantsModule,
     StocksModule,
     MaladiesModule,
+    RecoltesModule,
   ],
 })
 export class AppModule {}

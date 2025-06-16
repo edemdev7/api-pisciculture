@@ -1,6 +1,5 @@
 import { DataSource } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
-import { Role } from '../../users/entities/user.entity';
+import { User, Role, UserStatus } from '../../users/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 
 export class AdminSeeder {
@@ -24,13 +23,27 @@ export class AdminSeeder {
                 password: hashedPassword,
                 telephone: '+237600000000',
                 role: Role.ADMIN,
-                est_actif: true
+                est_actif: true,
+                statut: UserStatus.ACTIF,
+                est_verifie: true,
+                premiere_connexion: false
             });
 
             await userRepository.save(admin);
             console.log('Compte administrateur créé avec succès');
         } else {
-            console.log('Le compte administrateur existe déjà');
+            // Mettre à jour le mot de passe de l'admin existant
+            const hashedPassword = await bcrypt.hash('admin123', 10);
+            await userRepository.update(
+                { email: 'admin@pisciculture.com' },
+                {
+                    password: hashedPassword,
+                    est_actif: true,
+                    statut: UserStatus.ACTIF,
+                    est_verifie: true
+                }
+            );
+            console.log('Compte administrateur mis à jour avec succès');
         }
     }
 } 

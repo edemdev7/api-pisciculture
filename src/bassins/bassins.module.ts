@@ -12,6 +12,6 @@ import { User } from '../users/entities/user.entity';
   ],
   controllers: [BassinsController],
   providers: [BassinsService],
-  exports: [BassinsService]
+  exports: [BassinsService, TypeOrmModule]
 })
 export class BassinsModule {} 
