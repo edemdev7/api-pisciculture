@@ -51,6 +51,14 @@ export class User {
     })
     status: UserStatus;
 
+    @ApiProperty({ description: 'Code OTP pour la vérification' })
+    @Column({ nullable: true })
+    otp_code: string;
+
+    @ApiProperty({ description: 'Date d\'expiration du code OTP' })
+    @Column({ nullable: true })
+    otp_expire_at: Date;
+
     @ApiProperty({ description: 'Date de dernière connexion' })
     @Column({ nullable: true })
     derniereConnexion: Date;
