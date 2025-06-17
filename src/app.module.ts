@@ -9,6 +9,8 @@ import { IntrantsModule } from './intrants/intrants.module';
 import { RapportsModule } from './rapports/rapports.module';
 import { AlertesModule } from './alertes/alertes.module';
 import { QualiteEauModule } from './qualite-eau/qualite-eau.module';
+import { EquipementsModule } from './equipements/equipements.module';
+import { CoutsModule } from './couts/couts.module';
 
 @Module({
     imports: [
@@ -37,6 +39,8 @@ import { QualiteEauModule } from './qualite-eau/qualite-eau.module';
         RapportsModule,
         AlertesModule,
         QualiteEauModule,
+        EquipementsModule,
+        CoutsModule,
     ],
 })
 export class AppModule {}
