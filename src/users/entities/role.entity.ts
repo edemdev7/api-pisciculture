@@ -5,14 +5,9 @@ import { User } from './user.entity';
 
 @Entity('roles')
 export class Role {
-    static ADMIN: Role;
-    users: any;
-    static PISCICULTEUR(PISCICULTEUR: any, ADMIN: (PISCICULTEUR: unknown, ADMIN: any) => (target: import("../../alertes/notifications.controller").NotificationsController, propertyKey: "findAll", descriptor: TypedPropertyDescriptor<(req: any) => Promise<import("../../alertes/entities/notification.entity").Notification[]>>) => void | TypedPropertyDescriptor<any>): (target: import("../../alertes/notifications.controller").NotificationsController, propertyKey: "findAll", descriptor: TypedPropertyDescriptor<(req: any) => Promise<import("../../alertes/entities/notification.entity").Notification[]>>) => void | TypedPropertyDescriptor<...> {
-        throw new Error('Method not implemented.');
-    }
-    static ADMIN(PISCICULTEUR: unknown, ADMIN: any): (target: import("../../alertes/notifications.controller").NotificationsController, propertyKey: "findAll", descriptor: TypedPropertyDescriptor<(req: any) => Promise<import("../../alertes/entities/notification.entity").Notification[]>>) => void | TypedPropertyDescriptor<...> {
-        throw new Error('Method not implemented.');
-    }
+    static readonly ADMIN = 'ADMIN';
+    static readonly PISCICULTEUR = 'PISCICULTEUR';
+
     @ApiProperty({ description: 'Identifiant unique du rôle' })
     @PrimaryGeneratedColumn()
     id: number;
@@ -55,5 +50,4 @@ export class Role {
 
     @OneToMany(() => User, user => user.role)
     users: User[];
-    static PISCICULTEUR: unknown;
 } 
