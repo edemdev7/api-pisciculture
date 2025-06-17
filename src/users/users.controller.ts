@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -6,9 +6,10 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from './entities/user.entity';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
@@ -55,5 +56,12 @@ export class UsersController {
     @ApiResponse({ status: 404, description: 'Utilisateur non trouvé' })
     remove(@Param('id') id: string) {
         return this.usersService.remove(+id);
+    }
+
+    @Get('profile')
+    @ApiOperation({ summary: 'Récupérer le profil de l\'utilisateur connecté' })
+    @ApiResponse({ status: 200, description: 'Profil récupéré avec succès' })
+    getProfile(@Request() req) {
+        return this.usersService.findOne(req.user.id);
     }
 } 
