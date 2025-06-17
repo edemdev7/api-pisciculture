@@ -11,6 +11,7 @@ import { AlertesModule } from './alertes/alertes.module';
 import { QualiteEauModule } from './qualite-eau/qualite-eau.module';
 import { EquipementsModule } from './equipements/equipements.module';
 import { CoutsModule } from './couts/couts.module';
+import { RapportsFinanciersModule } from './rapports-financiers/rapports-financiers.module';
 
 @Module({
     imports: [
@@ -41,6 +42,7 @@ import { CoutsModule } from './couts/couts.module';
         QualiteEauModule,
         EquipementsModule,
         CoutsModule,
+        RapportsFinanciersModule,
     ],
 })
 export class AppModule {}
