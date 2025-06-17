@@ -2,11 +2,12 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { ApiProperty } from '@nestjs/swagger';
 import { Permission } from './permission.entity';
 import { User } from './user.entity';
+import { RoleEnum } from '../enums/role.enum';
 
 @Entity('roles')
 export class Role {
-    static readonly ADMIN = 'ADMIN';
-    static readonly PISCICULTEUR = 'PISCICULTEUR';
+    static readonly ADMIN = RoleEnum.ADMIN;
+    static readonly PISCICULTEUR = RoleEnum.PISCICULTEUR;
 
     @ApiProperty({ description: 'Identifiant unique du rôle' })
     @PrimaryGeneratedColumn()
@@ -20,7 +21,7 @@ export class Role {
     @Column({ type: 'text' })
     description: string;
 
-    @ApiProperty({ description: 'Code unique du rôle' })
+    @ApiProperty({ description: 'Code unique du rôle', enum: RoleEnum })
     @Column({ unique: true })
     code: string;
 

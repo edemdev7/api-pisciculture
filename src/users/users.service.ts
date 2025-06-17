@@ -7,6 +7,7 @@ import { CreatePisciculteurDto } from './dto/create-pisciculteur.dto';
 import { UpdatePisciculteurDto } from './dto/update-pisciculteur.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { RoleEnum } from './enums/role.enum';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -100,17 +101,20 @@ export class UsersService {
         }
 
         const role = await this.rolesRepository.findOne({ 
-            where: { code: createUserDto.role?.code || 'PISCICULTEUR' } 
+            where: { code: createUserDto.role || RoleEnum.PISCICULTEUR } 
         });
         if (!role) {
-            throw new NotFoundException(`Rôle ${createUserDto.role?.code || 'PISCICULTEUR'} non trouvé`);
+            throw new NotFoundException(`Rôle ${createUserDto.role || RoleEnum.PISCICULTEUR} non trouvé`);
         }
 
-        const user = this.usersRepository.create({
-            ...createUserDto,
-            roleId: role.id,
-            status: UserStatus.ACTIF,
-        });
+        const user = new User();
+        user.email = email;
+        user.password = password;
+        user.nom = createUserDto.nom;
+        user.prenom = createUserDto.prenom;
+        user.telephone = createUserDto.telephone || '';
+        user.roleId = role.id;
+        user.status = UserStatus.ACTIF;
 
         return this.usersRepository.save(user);
     }

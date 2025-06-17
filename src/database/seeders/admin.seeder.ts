@@ -1,5 +1,6 @@
 import { DataSource } from 'typeorm';
-import { User, Role, UserStatus } from '../../users/entities/user.entity';
+import { User, UserStatus } from '../../users/entities/user.entity';
+import { Role } from '../../users/entities/role.entity';
 import * as bcrypt from 'bcrypt';
 
 export class AdminSeeder {
@@ -7,6 +8,7 @@ export class AdminSeeder {
 
     async run() {
         const userRepository = this.dataSource.getRepository(User);
+        const roleRepository = this.dataSource.getRepository(Role);
 
         // Vérifier si l'admin existe déjà
         const adminExists = await userRepository.findOne({
@@ -15,19 +17,21 @@ export class AdminSeeder {
 
         if (!adminExists) {
             const hashedPassword = await bcrypt.hash('admin123', 10);
+            const adminRole = await roleRepository.findOne({ where: { code: Role.ADMIN } });
             
-            const admin = userRepository.create({
-                nom: 'Admin',
-                prenom: 'System',
-                email: 'admin@pisciculture.com',
-                password: hashedPassword,
-                telephone: '+237600000000',
-                role: Role.ADMIN,
-                est_actif: true,
-                statut: UserStatus.ACTIF,
-                est_verifie: true,
-                premiere_connexion: false
-            });
+            if (!adminRole) {
+                throw new Error('Rôle admin non trouvé');
+            }
+
+            const admin = new User();
+            admin.username = 'admin';
+            admin.nom = 'Admin';
+            admin.prenom = 'System';
+            admin.email = 'admin@pisciculture.com';
+            admin.password = hashedPassword;
+            admin.telephone = '+237600000000';
+            admin.roleId = adminRole.id;
+            admin.status = UserStatus.ACTIF;
 
             await userRepository.save(admin);
             console.log('Compte administrateur créé avec succès');
@@ -38,9 +42,7 @@ export class AdminSeeder {
                 { email: 'admin@pisciculture.com' },
                 {
                     password: hashedPassword,
-                    est_actif: true,
-                    statut: UserStatus.ACTIF,
-                    est_verifie: true
+                    status: UserStatus.ACTIF
                 }
             );
             console.log('Compte administrateur mis à jour avec succès');

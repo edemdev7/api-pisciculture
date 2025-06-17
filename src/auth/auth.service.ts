@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException, NotFoundException, BadRequestExcepti
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../users/entities/user.entity';
+import { User, UserStatus } from '../users/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { UsersService } from '../users/users.service';
@@ -131,7 +131,7 @@ export class AuthService {
       throw new NotFoundException('Utilisateur non trouvé');
     }
 
-    if (user.statut !== 'ACTIF') {
+    if (user.status !== UserStatus.ACTIF) {
       throw new UnauthorizedException('Compte inactif ou suspendu');
     }
 
@@ -148,10 +148,19 @@ export class AuthService {
   }
 
   async logout(userId: number) {
-    // Dans une implémentation plus avancée, nous pourrions :
-    // 1. Ajouter le token à une liste noire
-    // 2. Supprimer les sessions actives
-    // 3. Nettoyer les cookies
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    // Mettre à jour la date de dernière déconnexion
+    await this.usersRepository.update(userId, {
+      derniereConnexion: new Date()
+    });
+
     return { message: 'Déconnexion réussie' };
   }
 } 
