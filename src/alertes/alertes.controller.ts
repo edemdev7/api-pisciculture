@@ -4,7 +4,6 @@ import { CreateAlerteDto } from './dto/create-alerte.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from '../users/entities/user.entity';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { StatutAlerte } from './entities/alerte.entity';
 
@@ -16,7 +15,7 @@ export class AlertesController {
     constructor(private readonly alertesService: AlertesService) {}
 
     @Post()
-    @Roles(Role.PISCICULTEUR, Role.ADMIN)
+    @Roles('PISCICULTEUR', 'ADMIN')
     @ApiOperation({ summary: 'Créer une nouvelle alerte' })
     @ApiResponse({ status: 201, description: 'Alerte créée avec succès' })
     create(@Body() createAlerteDto: CreateAlerteDto, @Request() req) {
@@ -24,7 +23,7 @@ export class AlertesController {
     }
 
     @Get()
-    @Roles(Role.ADMIN)
+    @Roles('ADMIN')
     @ApiOperation({ summary: 'Récupérer toutes les alertes' })
     @ApiResponse({ status: 200, description: 'Liste des alertes récupérée avec succès' })
     findAll() {
@@ -32,7 +31,7 @@ export class AlertesController {
     }
 
     @Get('mes-alertes')
-    @Roles(Role.PISCICULTEUR)
+    @Roles('PISCICULTEUR')
     @ApiOperation({ summary: 'Récupérer les alertes du pisciculteur connecté' })
     @ApiResponse({ status: 200, description: 'Liste des alertes récupérée avec succès' })
     findMyAlerts(@Request() req) {
@@ -40,7 +39,7 @@ export class AlertesController {
     }
 
     @Get(':id')
-    @Roles(Role.PISCICULTEUR, Role.ADMIN)
+    @Roles('PISCICULTEUR', 'ADMIN')
     @ApiOperation({ summary: 'Récupérer une alerte par son ID' })
     @ApiResponse({ status: 200, description: 'Alerte récupérée avec succès' })
     @ApiResponse({ status: 404, description: 'Alerte non trouvée' })
@@ -49,7 +48,7 @@ export class AlertesController {
     }
 
     @Patch(':id/statut')
-    @Roles(Role.ADMIN)
+    @Roles('ADMIN')
     @ApiOperation({ summary: 'Mettre à jour le statut d\'une alerte' })
     @ApiResponse({ status: 200, description: 'Statut de l\'alerte mis à jour avec succès' })
     @ApiResponse({ status: 404, description: 'Alerte non trouvée' })
@@ -61,7 +60,7 @@ export class AlertesController {
     }
 
     @Delete(':id')
-    @Roles(Role.ADMIN)
+    @Roles('ADMIN')
     @ApiOperation({ summary: 'Supprimer une alerte' })
     @ApiResponse({ status: 200, description: 'Alerte supprimée avec succès' })
     @ApiResponse({ status: 404, description: 'Alerte non trouvée' })
