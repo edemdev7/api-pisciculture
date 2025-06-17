@@ -1,6 +1,6 @@
-import { IsEmail, IsString, IsEnum, IsOptional, MinLength, IsBoolean, IsDate } from 'class-validator';
+import { IsEmail, IsString, IsOptional, MinLength, IsBoolean, IsDate, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '../entities/user.entity';
+import { Role } from '../entities/role.entity';
 
 export class UpdateUserDto {
     @ApiProperty({ description: 'Nom de l\'utilisateur', example: 'Doe', required: false })
@@ -30,13 +30,18 @@ export class UpdateUserDto {
 
     @ApiProperty({ 
         description: 'Rôle de l\'utilisateur',
-        enum: Role,
-        example: Role.PISCICULTEUR,
-        required: false 
+        type: 'object',
+        properties: {
+            code: {
+                type: 'string',
+                example: 'PISCICULTEUR'
+            }
+        },
+        additionalProperties: false
     })
     @IsOptional()
-    @IsEnum(Role)
-    role?: Role;
+    @IsObject()
+    role?: { code: string };
 
     @ApiProperty({ description: 'Statut d\'activation de l\'utilisateur', example: true, required: false })
     @IsOptional()

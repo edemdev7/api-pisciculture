@@ -5,7 +5,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from './entities/user.entity';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('users')
@@ -16,7 +15,7 @@ export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
     @Post()
-    @Roles(Role.ADMIN)
+    @Roles('ADMIN')
     @ApiOperation({ summary: 'Créer un nouvel utilisateur' })
     @ApiResponse({ status: 201, description: 'Utilisateur créé avec succès' })
     create(@Body() createUserDto: CreateUserDto) {
@@ -24,7 +23,7 @@ export class UsersController {
     }
 
     @Get()
-    @Roles(Role.ADMIN)
+    @Roles('ADMIN')
     @ApiOperation({ summary: 'Récupérer tous les utilisateurs' })
     @ApiResponse({ status: 200, description: 'Liste des utilisateurs récupérée avec succès' })
     findAll() {
@@ -32,7 +31,7 @@ export class UsersController {
     }
 
     @Get(':id')
-    @Roles(Role.ADMIN)
+    @Roles('ADMIN')
     @ApiOperation({ summary: 'Récupérer un utilisateur par son ID' })
     @ApiResponse({ status: 200, description: 'Utilisateur récupéré avec succès' })
     @ApiResponse({ status: 404, description: 'Utilisateur non trouvé' })
@@ -41,7 +40,7 @@ export class UsersController {
     }
 
     @Patch(':id')
-    @Roles(Role.ADMIN)
+    @Roles('ADMIN')
     @ApiOperation({ summary: 'Mettre à jour un utilisateur' })
     @ApiResponse({ status: 200, description: 'Utilisateur mis à jour avec succès' })
     @ApiResponse({ status: 404, description: 'Utilisateur non trouvé' })
@@ -50,7 +49,7 @@ export class UsersController {
     }
 
     @Delete(':id')
-    @Roles(Role.ADMIN)
+    @Roles('ADMIN')
     @ApiOperation({ summary: 'Supprimer un utilisateur' })
     @ApiResponse({ status: 200, description: 'Utilisateur supprimé avec succès' })
     @ApiResponse({ status: 404, description: 'Utilisateur non trouvé' })
