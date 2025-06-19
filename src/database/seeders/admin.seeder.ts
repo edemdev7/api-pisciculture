@@ -16,7 +16,7 @@ export class AdminSeeder {
         });
 
         if (!adminExists) {
-            const hashedPassword = await bcrypt.hash('admin123', 10);
+            //const hashedPassword = await bcrypt.hash('admin123', 10);
             const adminRole = await roleRepository.findOne({ where: { code: Role.ADMIN } });
             
             if (!adminRole) {
@@ -28,7 +28,7 @@ export class AdminSeeder {
             admin.nom = 'Admin';
             admin.prenom = 'System';
             admin.email = 'admin@pisciculture.com';
-            admin.password = hashedPassword;
+            admin.password = 'admin123';
             admin.telephone = '+237600000000';
             admin.roleId = adminRole.id;
             admin.status = UserStatus.ACTIF;
@@ -37,11 +37,11 @@ export class AdminSeeder {
             console.log('Compte administrateur créé avec succès');
         } else {
             // Mettre à jour le mot de passe de l'admin existant
-            const hashedPassword = await bcrypt.hash('admin123', 10);
+            //const hashedPassword = await bcrypt.hash('admin123', 10);
             await userRepository.update(
                 { email: 'admin@pisciculture.com' },
                 {
-                    password: hashedPassword,
+                    password: 'admin123',
                     status: UserStatus.ACTIF
                 }
             );

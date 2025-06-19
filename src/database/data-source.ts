@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
 import { config } from 'dotenv';
-import { User } from '../users/entities/user.entity';
+import { User, Role } from '../users/entities/user.entity';
 import { Bassin } from '../bassins/entities/bassin.entity';
 import { PisciculteurBassin } from '../bassins/entities/pisciculteur-bassin.entity';
 import { Aliment } from '../aliments/entities/aliment.entity';
@@ -14,7 +14,7 @@ import { MouvementStock } from '../stocks/entities/mouvement-stock.entity';
 import { Maladie } from '../maladies/entities/maladie.entity';
 import { Diagnostic } from '../maladies/entities/diagnostic.entity';
 import { Traitement } from '../maladies/entities/traitement.entity';
-
+import { Permission } from '../users/entities/permission.entity';
 config();
 
 export const AppDataSource = new DataSource({
@@ -38,7 +38,9 @@ export const AppDataSource = new DataSource({
         MouvementStock,
         Maladie,
         Diagnostic,
-        Traitement
+        Traitement,
+        Role,
+        Permission
     ],
     synchronize: true,
     logging: true
