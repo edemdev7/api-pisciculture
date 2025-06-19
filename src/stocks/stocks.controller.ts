@@ -7,7 +7,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../users/entities/user.entity';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('stocks')
 @Controller('stocks')
@@ -19,6 +19,7 @@ export class StocksController {
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Créer un nouveau stock' })
   @ApiResponse({ status: 201, description: 'Stock créé avec succès' })
+  @ApiBody({ type: CreateStockDto })
   create(@Body() createStockDto: CreateStockDto) {
     return this.stocksService.create(createStockDto);
   }
@@ -71,6 +72,7 @@ export class StocksController {
   @ApiOperation({ summary: 'Créer un mouvement de stock' })
   @ApiResponse({ status: 201, description: 'Mouvement créé avec succès' })
   @ApiResponse({ status: 400, description: 'Quantité insuffisante en stock' })
+  @ApiBody({ type: CreateMouvementDto })
   createMouvement(@Body() createMouvementDto: CreateMouvementDto, @Request() req) {
     return this.stocksService.createMouvement(createMouvementDto, req.user.id);
   }

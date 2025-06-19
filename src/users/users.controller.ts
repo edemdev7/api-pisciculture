@@ -5,7 +5,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -18,6 +18,7 @@ export class UsersController {
     @Roles('ADMIN')
     @ApiOperation({ summary: 'Créer un nouvel utilisateur' })
     @ApiResponse({ status: 201, description: 'Utilisateur créé avec succès' })
+    @ApiBody({ type: CreateUserDto })
     create(@Body() createUserDto: CreateUserDto) {
         return this.usersService.create(createUserDto);
     }

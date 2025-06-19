@@ -5,7 +5,7 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { Role } from '../entities/role.entity';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('roles')
 @ApiBearerAuth()
@@ -18,6 +18,7 @@ export class RolesController {
     @Roles('ADMIN')
     @ApiOperation({ summary: 'Créer un nouveau rôle' })
     @ApiResponse({ status: 201, description: 'Rôle créé avec succès' })
+    @ApiBody({ type: CreateRoleDto })
     create(@Body() createRoleDto: CreateRoleDto) {
         return this.rolesService.create(createRoleDto);
     }

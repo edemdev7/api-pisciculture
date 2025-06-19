@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { RecoltesService } from './recoltes.service';
 import { CreateRecolteDto } from './dto/create-recolte.dto';
 import { UpdateRecolteDto } from './dto/update-recolte.dto';
@@ -21,6 +21,7 @@ export class RecoltesController {
     @Roles(Role.PISCICULTEUR, Role.ADMIN)
     @ApiOperation({ summary: 'Créer une nouvelle récolte' })
     @ApiResponse({ status: 201, description: 'Récolte créée avec succès' })
+    @ApiBody({ type: CreateRecolteDto })
     create(@Body() createRecolteDto: CreateRecolteDto) {
         return this.recoltesService.create(createRecolteDto);
     }
@@ -62,6 +63,7 @@ export class RecoltesController {
     @Roles(Role.PISCICULTEUR, Role.ADMIN)
     @ApiOperation({ summary: 'Créer une nouvelle vente' })
     @ApiResponse({ status: 201, description: 'Vente créée avec succès' })
+    @ApiBody({ type: CreateVenteDto })
     createVente(@Body() createVenteDto: CreateVenteDto) {
         return this.recoltesService.createVente(createVenteDto);
     }

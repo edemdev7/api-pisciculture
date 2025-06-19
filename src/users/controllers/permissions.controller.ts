@@ -4,7 +4,7 @@ import { CreatePermissionDto } from '../dto/create-permission.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('permissions')
 @ApiBearerAuth()
@@ -17,6 +17,7 @@ export class PermissionsController {
     @Roles('ADMIN')
     @ApiOperation({ summary: 'Créer une nouvelle permission' })
     @ApiResponse({ status: 201, description: 'Permission créée avec succès' })
+    @ApiBody({ type: CreatePermissionDto })
     create(@Body() createPermissionDto: CreatePermissionDto) {
         return this.permissionsService.create(createPermissionDto);
     }
