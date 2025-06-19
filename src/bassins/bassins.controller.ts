@@ -7,7 +7,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../users/entities/user.entity';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('bassins')
 @Controller('bassins')
@@ -19,6 +19,7 @@ export class BassinsController {
     @Roles(Role.ADMIN)
     @ApiOperation({ summary: 'Créer un nouveau bassin' })
     @ApiResponse({ status: 201, description: 'Bassin créé avec succès' })
+    @ApiBody({ type: CreateBassinDto })
     create(@Body() createBassinDto: CreateBassinDto) {
         return this.bassinsService.create(createBassinDto);
     }
@@ -63,6 +64,7 @@ export class BassinsController {
     @ApiOperation({ summary: 'Assigner un bassin à un pisciculteur' })
     @ApiResponse({ status: 201, description: 'Bassin assigné avec succès' })
     @ApiResponse({ status: 400, description: 'Bassin déjà assigné' })
+    @ApiBody({ type: AssignBassinDto })
     assignBassin(@Body() assignBassinDto: AssignBassinDto) {
         return this.bassinsService.assignBassin(assignBassinDto);
     }

@@ -12,7 +12,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../users/entities/user.entity';
 import { StatutDistribution } from './entities/distribution-aliment.entity';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('aliments')
 @Controller('aliments')
@@ -25,6 +25,7 @@ export class AlimentsController {
     @Roles(Role.ADMIN)
     @ApiOperation({ summary: 'Créer un nouvel aliment' })
     @ApiResponse({ status: 201, description: 'Aliment créé avec succès' })
+    @ApiBody({ type: CreateAlimentDto })
     create(@Body() createAlimentDto: CreateAlimentDto) {
         return this.alimentsService.create(createAlimentDto);
     }
@@ -69,6 +70,7 @@ export class AlimentsController {
     @Roles(Role.ADMIN)
     @ApiOperation({ summary: 'Créer un nouveau stock d\'aliment' })
     @ApiResponse({ status: 201, description: 'Stock créé avec succès' })
+    @ApiBody({ type: CreateStockAlimentDto })
     createStock(@Body() createStockAlimentDto: CreateStockAlimentDto) {
         return this.alimentsService.createStock(createStockAlimentDto);
     }
@@ -113,6 +115,7 @@ export class AlimentsController {
     @Roles(Role.ADMIN, Role.PISCICULTEUR)
     @ApiOperation({ summary: 'Créer un mouvement de stock' })
     @ApiResponse({ status: 201, description: 'Mouvement créé avec succès' })
+    @ApiBody({ type: CreateMouvementStockAlimentDto })
     createMouvement(@Body() createMouvementDto: CreateMouvementStockAlimentDto, @Request() req) {
         return this.alimentsService.createMouvementStock(
             createMouvementDto.stock_id,
@@ -144,6 +147,7 @@ export class AlimentsController {
     @Roles(Role.ADMIN)
     @ApiOperation({ summary: 'Créer une nouvelle distribution d\'aliment' })
     @ApiResponse({ status: 201, description: 'Distribution créée avec succès' })
+    @ApiBody({ type: CreateDistributionAlimentDto })
     createDistribution(@Body() createDistributionDto: CreateDistributionAlimentDto, @Request() req) {
         return this.alimentsService.createDistribution(createDistributionDto, req.user.id);
     }

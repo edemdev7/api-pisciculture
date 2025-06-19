@@ -8,7 +8,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../users/entities/user.entity';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('intrants')
 @Controller('intrants')
@@ -21,6 +21,7 @@ export class IntrantsController {
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Créer un nouvel intrant' })
   @ApiResponse({ status: 201, description: 'Intrant créé avec succès' })
+  @ApiBody({ type: CreateIntrantDto })
   create(@Body() createIntrantDto: CreateIntrantDto) {
     return this.intrantsService.create(createIntrantDto);
   }
@@ -63,6 +64,7 @@ export class IntrantsController {
   // Gestion des livraisons (ADMIN)
   @Post('livraisons')
   @Roles(Role.ADMIN)
+  @ApiBody({ type: CreateLivraisonDto })
   createLivraison(@Body() createLivraisonDto: CreateLivraisonDto, @Request() req) {
     return this.intrantsService.createLivraison(createLivraisonDto, req.user.id);
   }
