@@ -17,7 +17,14 @@ async function bootstrap() {
     .setTitle('API Pisciculture')
     .setDescription('API pour la gestion d\'une ferme piscicole')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      name: 'Authorization',
+      description: 'Entrez le token JWT',
+      in: 'header',
+    }, 'access-token')
     .build();
   
   const document = SwaggerModule.createDocument(app, config);
