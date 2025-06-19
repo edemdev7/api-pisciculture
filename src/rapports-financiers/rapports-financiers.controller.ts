@@ -5,7 +5,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../users/entities/user.entity';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { TypeRapportFinancier } from './entities/rapport-financier.entity';
 
 @ApiTags('rapports-financiers')
@@ -19,6 +19,7 @@ export class RapportsFinanciersController {
     @Roles(Role.ADMIN)
     @ApiOperation({ summary: 'Créer un nouveau rapport financier' })
     @ApiResponse({ status: 201, description: 'Rapport créé avec succès' })
+    @ApiBody({ type: CreateRapportFinancierDto })
     create(@Body() createRapportFinancierDto: CreateRapportFinancierDto) {
         return this.rapportsFinanciersService.create(createRapportFinancierDto);
     }

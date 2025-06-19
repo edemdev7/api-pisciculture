@@ -5,7 +5,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../users/entities/user.entity';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { TypeStatistique } from './entities/statistique.entity';
 
 @ApiTags('statistiques')
@@ -19,6 +19,7 @@ export class StatistiquesController {
     @Roles(Role.PISCICULTEUR, Role.ADMIN)
     @ApiOperation({ summary: 'Créer une nouvelle statistique' })
     @ApiResponse({ status: 201, description: 'Statistique créée avec succès' })
+    @ApiBody({ type: CreateStatistiqueDto })
     create(@Body() createStatistiqueDto: CreateStatistiqueDto, @Request() req) {
         return this.statistiquesService.create(createStatistiqueDto, req.user);
     }
