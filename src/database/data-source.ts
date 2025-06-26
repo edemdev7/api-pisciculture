@@ -15,6 +15,11 @@ import { Maladie } from '../maladies/entities/maladie.entity';
 import { Diagnostic } from '../maladies/entities/diagnostic.entity';
 import { Traitement } from '../maladies/entities/traitement.entity';
 import { Permission } from '../users/entities/permission.entity';
+import { AvanceIntrant } from '../avances-intrants/entities/avance-intrant.entity';
+import { Remboursement } from '../avances-intrants/entities/remboursement.entity';
+import { Dette } from '../avances-intrants/entities/dette.entity';
+import { Region } from '../regions/region.entity';
+import { Departement } from '../departements/departement.entity';
 config();
 
 export const AppDataSource = new DataSource({
@@ -40,7 +45,12 @@ export const AppDataSource = new DataSource({
         Diagnostic,
         Traitement,
         Role,
-        Permission
+        Permission,
+        AvanceIntrant,
+        Remboursement,
+        Dette,
+        Region,
+        Departement
     ],
     synchronize: true,
     logging: true

@@ -14,6 +14,7 @@ import { CoutsModule } from './couts/couts.module';
 import { RapportsFinanciersModule } from './rapports-financiers/rapports-financiers.module';
 import { DepartementsModule } from './departements/departements.module';
 import { RegionsModule } from './regions/regions.module';
+import { AvancesIntrantsModule } from './avances-intrants/avances-intrants.module';
 
 @Module({
     imports: [
@@ -47,6 +48,7 @@ import { RegionsModule } from './regions/regions.module';
         RapportsFinanciersModule,
         DepartementsModule,
         RegionsModule,
+        AvancesIntrantsModule,
     ],
 })
 export class AppModule {}
