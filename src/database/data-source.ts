@@ -20,6 +20,7 @@ import { Remboursement } from '../avances-intrants/entities/remboursement.entity
 import { Dette } from '../avances-intrants/entities/dette.entity';
 import { Region } from '../regions/region.entity';
 import { Departement } from '../departements/departement.entity';
+import { EvenementCalendrier } from '../calendrier/entities/evenement-calendrier.entity';
 config();
 
 export const AppDataSource = new DataSource({
@@ -50,7 +51,8 @@ export const AppDataSource = new DataSource({
         Remboursement,
         Dette,
         Region,
-        Departement
+        Departement,
+        EvenementCalendrier
     ],
     synchronize: true,
     logging: true

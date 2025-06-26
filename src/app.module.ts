@@ -15,6 +15,7 @@ import { RapportsFinanciersModule } from './rapports-financiers/rapports-financi
 import { DepartementsModule } from './departements/departements.module';
 import { RegionsModule } from './regions/regions.module';
 import { AvancesIntrantsModule } from './avances-intrants/avances-intrants.module';
+import { CalendrierModule } from './calendrier/calendrier.module';
 
 @Module({
     imports: [
@@ -49,6 +50,7 @@ import { AvancesIntrantsModule } from './avances-intrants/avances-intrants.modul
         DepartementsModule,
         RegionsModule,
         AvancesIntrantsModule,
+        CalendrierModule,
     ],
 })
 export class AppModule {}
