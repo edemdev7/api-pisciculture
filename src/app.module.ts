@@ -12,6 +12,8 @@ import { QualiteEauModule } from './qualite-eau/qualite-eau.module';
 import { EquipementsModule } from './equipements/equipements.module';
 import { CoutsModule } from './couts/couts.module';
 import { RapportsFinanciersModule } from './rapports-financiers/rapports-financiers.module';
+import { DepartementsModule } from './departements/departements.module';
+import { RegionsModule } from './regions/regions.module';
 
 @Module({
     imports: [
@@ -43,6 +45,8 @@ import { RapportsFinanciersModule } from './rapports-financiers/rapports-financi
         EquipementsModule,
         CoutsModule,
         RapportsFinanciersModule,
+        DepartementsModule,
+        RegionsModule,
     ],
 })
 export class AppModule {}

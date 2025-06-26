@@ -3,7 +3,7 @@ import { config } from 'dotenv';
 
 config();
 
-export const AppDataSource = new DataSource({
+export const dataSource = new DataSource({
     type: 'postgres',
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || '5432'),
@@ -13,6 +13,4 @@ export const AppDataSource = new DataSource({
     entities: ['dist/**/*.entity{.ts,.js}'],
     migrations: ['dist/migrations/*{.ts,.js}'],
     synchronize: false,
-});
-
-export default AppDataSource; 
+}); 

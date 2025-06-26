@@ -9,6 +9,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RoleEnum } from './enums/role.enum';
 import * as bcrypt from 'bcrypt';
+import { Region } from '../regions/region.entity';
 
 @Injectable()
 export class UsersService {
@@ -17,6 +18,8 @@ export class UsersService {
         private usersRepository: Repository<User>,
         @InjectRepository(Role)
         private rolesRepository: Repository<Role>,
+        @InjectRepository(Region)
+        private regionsRepository: Repository<Region>,
     ) {}
 
     async createPisciculteur(createPisciculteurDto: CreatePisciculteurDto) {
@@ -28,16 +31,39 @@ export class UsersService {
             throw new ConflictException('Ce numéro de téléphone est déjà utilisé');
         }
 
+        const existingEmail = await this.findByEmail(createPisciculteurDto.email);
+        if (existingEmail) {
+            throw new ConflictException('Un utilisateur avec cet email existe déjà');
+        }
+
         const role = await this.rolesRepository.findOne({ where: { code: 'PISCICULTEUR' } });
         if (!role) {
             throw new NotFoundException('Rôle PISCICULTEUR non trouvé');
         }
 
-        const user = this.usersRepository.create({
+        const region = await this.regionsRepository.findOne({ where: { id: createPisciculteurDto.region_id } });
+        if (!region) {
+            throw new NotFoundException('Région non trouvée');
+        }
+
+        const username = createPisciculteurDto.email.split('@')[0];
+        
+        console.log('Creating pisciculteur with data:', {
             ...createPisciculteurDto,
+            username,
             roleId: role.id,
             status: UserStatus.ACTIF,
         });
+
+        const user = this.usersRepository.create({
+            ...createPisciculteurDto,
+            username,
+            region,
+            roleId: role.id,
+            status: UserStatus.ACTIF,
+        });
+
+        console.log('User object before save:', user);
 
         return this.usersRepository.save(user);
     }
@@ -83,6 +109,14 @@ export class UsersService {
             }
         }
 
+        if (updatePisciculteurDto.region_id) {
+            const region = await this.regionsRepository.findOne({ where: { id: updatePisciculteurDto.region_id } });
+            if (!region) {
+                throw new NotFoundException('Région non trouvée');
+            }
+            user.region = region;
+        }
+
         Object.assign(user, updatePisciculteurDto);
         return this.usersRepository.save(user);
     }
@@ -93,7 +127,7 @@ export class UsersService {
     }
 
     async create(createUserDto: CreateUserDto): Promise<User> {
-        const { email, password } = createUserDto;
+        const { email, password, username } = createUserDto;
 
         const existingUser = await this.findByEmail(email);
         if (existingUser) {
@@ -108,6 +142,7 @@ export class UsersService {
         }
 
         const user = new User();
+        user.username = username;
         user.email = email;
         user.password = password;
         user.nom = createUserDto.nom;

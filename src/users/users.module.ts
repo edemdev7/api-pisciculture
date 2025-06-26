@@ -9,10 +9,13 @@ import { RolesService } from './services/roles.service';
 import { PermissionsService } from './services/permissions.service';
 import { RolesController } from './controllers/roles.controller';
 import { PermissionsController } from './controllers/permissions.controller';
+import { Region } from '../regions/region.entity';
+import { RegionsModule } from '../regions/regions.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Role, Permission])
+    TypeOrmModule.forFeature([User, Role, Permission, Region]),
+    RegionsModule,
   ],
   controllers: [UsersController, RolesController, PermissionsController],
   providers: [UsersService, RolesService, PermissionsService],

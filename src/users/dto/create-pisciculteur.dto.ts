@@ -1,4 +1,5 @@
-import { IsString, Length, IsNotEmpty } from 'class-validator';
+import { IsString, Length, IsNotEmpty, IsNumber, IsEmail } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePisciculteurDto {
   @IsString()
@@ -13,4 +14,16 @@ export class CreatePisciculteurDto {
   @IsString()
   @IsNotEmpty()
   prenom: string;
+
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  password: string;
+
+  @ApiProperty({ description: 'ID de la région' })
+  @IsNumber()
+  region_id: number;
 } 

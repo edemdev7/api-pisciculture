@@ -1,5 +1,6 @@
-import { IsString, Length, IsOptional, IsEnum } from 'class-validator';
+import { IsString, Length, IsOptional, IsEnum, IsNumber } from 'class-validator';
 import { UserStatus } from '../entities/user.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdatePisciculteurDto {
   @IsString()
@@ -18,4 +19,9 @@ export class UpdatePisciculteurDto {
   @IsEnum(UserStatus)
   @IsOptional()
   statut?: UserStatus;
+
+  @ApiProperty({ description: 'ID de la région', required: false })
+  @IsNumber()
+  @IsOptional()
+  region_id?: number;
 } 

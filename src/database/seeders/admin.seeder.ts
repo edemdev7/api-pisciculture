@@ -37,7 +37,6 @@ export class AdminSeeder {
             console.log('Compte administrateur créé avec succès');
         } else {
             // Mettre à jour le mot de passe de l'admin existant
-            //const hashedPassword = await bcrypt.hash('admin123', 10);
             await userRepository.update(
                 { email: 'admin@pisciculture.com' },
                 {

@@ -7,6 +7,7 @@ import { DistributionAliment } from '../../aliments/entities/distribution-alimen
 import { MouvementStockAliment } from '../../aliments/entities/mouvement-stock-aliment.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from './role.entity';
+import { Region } from '../../regions/region.entity';
 
 export enum UserStatus {
     ACTIF = 'actif',
@@ -92,6 +93,9 @@ export class User {
 
     @OneToMany(() => MouvementStockAliment, mouvement => mouvement.pisciculteur)
     mouvements: MouvementStockAliment[];
+
+    @ManyToOne(() => Region, region => region.users, { nullable: true, eager: true })
+    region: Region;
 
     @BeforeInsert()
     async hashPassword() {

@@ -7,6 +7,7 @@ import { CreateBassinDto } from './dto/create-bassin.dto';
 import { UpdateBassinDto } from './dto/update-bassin.dto';
 import { AssignBassinDto } from './dto/assign-bassin.dto';
 import { User } from '../users/entities/user.entity';
+import { Region } from '../regions/region.entity';
 
 @Injectable()
 export class BassinsService {
@@ -17,10 +18,16 @@ export class BassinsService {
     private pisciculteurBassinRepository: Repository<PisciculteurBassin>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Region)
+    private regionsRepository: Repository<Region>,
   ) {}
 
   async create(createBassinDto: CreateBassinDto) {
-    const bassin = this.bassinRepository.create(createBassinDto);
+    const region = await this.regionsRepository.findOne({ where: { id: createBassinDto.region_id } });
+    if (!region) {
+      throw new NotFoundException('Région non trouvée');
+    }
+    const bassin = this.bassinRepository.create({ ...createBassinDto, region });
     return await this.bassinRepository.save(bassin);
   }
 
@@ -45,6 +52,13 @@ export class BassinsService {
 
   async update(id: number, updateBassinDto: UpdateBassinDto) {
     const bassin = await this.findOne(id);
+    if (updateBassinDto.region_id) {
+      const region = await this.regionsRepository.findOne({ where: { id: updateBassinDto.region_id } });
+      if (!region) {
+        throw new NotFoundException('Région non trouvée');
+      }
+      bassin.region = region;
+    }
     Object.assign(bassin, updateBassinDto);
     return await this.bassinRepository.save(bassin);
   }

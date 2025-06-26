@@ -1,5 +1,6 @@
 import { IsString, IsNumber, IsOptional, Min, IsEnum } from 'class-validator';
 import { BassinStatus } from '../entities/bassin.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateBassinDto {
   @IsString()
@@ -23,4 +24,9 @@ export class UpdateBassinDto {
   @IsEnum(BassinStatus)
   @IsOptional()
   statut?: BassinStatus;
+
+  @ApiProperty({ description: 'ID de la région', required: false })
+  @IsNumber()
+  @IsOptional()
+  region_id?: number;
 } 

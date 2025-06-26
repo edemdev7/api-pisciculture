@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { DistributionAliment } from '../../aliments/entities/distribution-aliment.entity';
+import { Region } from '../../regions/region.entity';
 
 export enum BassinStatus {
   ACTIF = 'ACTIF',
@@ -55,4 +56,7 @@ export class Bassin {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @ManyToOne(() => Region, region => region.bassins, { nullable: true, eager: true })
+  region: Region;
 } 
