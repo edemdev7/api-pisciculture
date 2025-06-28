@@ -88,4 +88,44 @@ export class BassinsController {
     getPisciculteurBassins(@Param('pisciculteurId') pisciculteurId: string) {
         return this.bassinsService.getPisciculteurBassins(+pisciculteurId);
     }
+
+    @Get('pisciculteur/:pisciculteurId/detailed')
+    @Roles(Role.ADMIN, Role.PISCICULTEUR)
+    @ApiOperation({ summary: 'Récupérer les bassins détaillés d\'un pisciculteur avec performances et pêches' })
+    @ApiResponse({ status: 200, description: 'Liste des bassins détaillés récupérée' })
+    getBassinsByPisciculteur(@Param('pisciculteurId') pisciculteurId: string) {
+        return this.bassinsService.getBassinsByPisciculteur(+pisciculteurId);
+    }
+
+    @Get('sans-pisciculteur')
+    @Roles(Role.ADMIN)
+    @ApiOperation({ summary: 'Récupérer les bassins sans pisciculteur assigné' })
+    @ApiResponse({ status: 200, description: 'Liste des bassins sans pisciculteur' })
+    getBassinsWithoutPisciculteur() {
+        return this.bassinsService.getBassinsWithoutPisciculteur();
+    }
+
+    @Get('status/:status')
+    @Roles(Role.ADMIN, Role.PISCICULTEUR)
+    @ApiOperation({ summary: 'Récupérer les bassins par statut' })
+    @ApiResponse({ status: 200, description: 'Liste des bassins par statut' })
+    getBassinsByStatus(@Param('status') status: string) {
+        return this.bassinsService.getBassinsByStatus(status as any);
+    }
+
+    @Get('region/:regionId')
+    @Roles(Role.ADMIN, Role.PISCICULTEUR)
+    @ApiOperation({ summary: 'Récupérer les bassins par région' })
+    @ApiResponse({ status: 200, description: 'Liste des bassins par région' })
+    getBassinsByRegion(@Param('regionId') regionId: string) {
+        return this.bassinsService.getBassinsByRegion(+regionId);
+    }
+
+    @Get('summary/statistiques')
+    @Roles(Role.ADMIN)
+    @ApiOperation({ summary: 'Récupérer les statistiques générales des bassins' })
+    @ApiResponse({ status: 200, description: 'Statistiques des bassins récupérées' })
+    getBassinsSummary() {
+        return this.bassinsService.getBassinsSummary();
+    }
 } 

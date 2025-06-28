@@ -9,6 +9,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Role } from './role.entity';
 import { Region } from '../../regions/region.entity';
 import { ActivitePisciculteur } from './activite-pisciculteur.entity';
+import { PecheControle } from '../../bassins/entities/peche-controle.entity';
 
 export enum UserStatus {
     ACTIF = 'actif',
@@ -117,6 +118,9 @@ export class User {
 
     @OneToMany(() => ActivitePisciculteur, activite => activite.pisciculteur)
     activites: ActivitePisciculteur[];
+
+    @OneToMany(() => PecheControle, peche => peche.pisciculteur)
+    peches_controle: PecheControle[];
 
     @ManyToOne(() => Region, region => region.users, { nullable: true, eager: true })
     region: Region;

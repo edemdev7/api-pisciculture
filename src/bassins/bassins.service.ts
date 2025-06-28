@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, IsNull } from 'typeorm';
 import { Bassin } from './entities/bassin.entity';
 import { PisciculteurBassin, PisciculteurBassinStatus } from './entities/pisciculteur-bassin.entity';
 import { CreateBassinDto } from './dto/create-bassin.dto';
@@ -8,7 +8,7 @@ import { UpdateBassinDto } from './dto/update-bassin.dto';
 import { AssignBassinDto } from './dto/assign-bassin.dto';
 import { User } from '../users/entities/user.entity';
 import { Region } from '../regions/region.entity';
-
+import { BassinStatus } from './entities/bassin.entity';
 @Injectable()
 export class BassinsService {
   constructor(
@@ -127,5 +127,49 @@ export class BassinsService {
     });
 
     return assignments.map(assignment => assignment.bassin);
+  }
+
+  async getBassinsByPisciculteur(pisciculteurId: number): Promise<Bassin[]> {
+    return await this.bassinRepository.find({
+      where: { pisciculteur: { id: pisciculteurId } },
+      relations: ['pisciculteur', 'region', 'performances', 'peches_controle'],
+    });
+  }
+
+  async getBassinsWithoutPisciculteur(): Promise<Bassin[]> {
+    return await this.bassinRepository.find({
+      where: { pisciculteur: IsNull() },
+      relations: ['region'],
+    });
+  }
+
+  async getBassinsByStatus(status: BassinStatus): Promise<Bassin[]> {
+    return await this.bassinRepository.find({
+      where: { statut: status },
+      relations: ['pisciculteur', 'region'],
+    });
+  }
+
+  async getBassinsByRegion(regionId: number): Promise<Bassin[]> {
+    return await this.bassinRepository.find({
+      where: { region: { id: regionId } },
+      relations: ['pisciculteur', 'region'],
+    });
+  }
+
+  async getBassinsSummary(): Promise<any> {
+    const totalBassins = await this.bassinRepository.count();
+    const bassinsActifs = await this.bassinRepository.count({ where: { statut: BassinStatus.ACTIF } });
+    const bassinsInactifs = await this.bassinRepository.count({ where: { statut: BassinStatus.INACTIF } });
+    const bassinsEnMaintenance = await this.bassinRepository.count({ where: { statut: BassinStatus.EN_MAINTENANCE } });
+    const bassinsSansPisciculteur = await this.bassinRepository.count({ where: { pisciculteur: IsNull() } });
+
+    return {
+      total: totalBassins,
+      actifs: bassinsActifs,
+      inactifs: bassinsInactifs,
+      en_maintenance: bassinsEnMaintenance,
+      sans_pisciculteur: bassinsSansPisciculteur,
+    };
   }
 } 
