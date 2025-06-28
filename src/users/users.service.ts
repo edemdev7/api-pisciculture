@@ -134,7 +134,7 @@ export class UsersService {
             user.status = UserStatus.ACTIF;
             user.date_activation = new Date();
             user.admin_activation = adminUsername;
-            user.raison_desactivation = null;
+            user.raison_desactivation = "";
         } else {
             user.status = UserStatus.INACTIF;
             user.raison_desactivation = updateStatusDto.raison_desactivation || 'Désactivé par l\'administrateur';

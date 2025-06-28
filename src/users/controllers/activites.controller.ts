@@ -5,7 +5,7 @@ import { CreateActiviteDto } from '../dto/create-activite.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
-import { Role } from '../enums/role.enum';
+import { RoleEnum } from '../enums/role.enum';
 
 @ApiTags('Activités Pisciculteurs')
 @Controller('activites-pisciculteurs')
@@ -15,7 +15,7 @@ export class ActivitesController {
     constructor(private readonly activitesService: ActivitesService) {}
 
     @Post(':pisciculteurId')
-    @Roles(Role.ADMIN)
+    @Roles(RoleEnum.ADMIN)
     @ApiOperation({ summary: 'Créer une nouvelle activité pour un pisciculteur' })
     @ApiResponse({ status: 201, description: 'Activité créée avec succès' })
     @ApiResponse({ status: 403, description: 'Accès interdit' })
@@ -27,7 +27,7 @@ export class ActivitesController {
     }
 
     @Get(':pisciculteurId')
-    @Roles(Role.ADMIN)
+    @Roles(RoleEnum.ADMIN)
     @ApiOperation({ summary: 'Récupérer l\'historique des activités d\'un pisciculteur' })
     @ApiQuery({ name: 'page', required: false, description: 'Numéro de page' })
     @ApiQuery({ name: 'limit', required: false, description: 'Nombre d\'éléments par page' })
@@ -42,7 +42,7 @@ export class ActivitesController {
     }
 
     @Get(':pisciculteurId/statistiques')
-    @Roles(Role.ADMIN)
+    @Roles(RoleEnum.ADMIN)
     @ApiOperation({ summary: 'Récupérer les statistiques d\'activités d\'un pisciculteur' })
     @ApiResponse({ status: 200, description: 'Statistiques récupérées' })
     @ApiResponse({ status: 403, description: 'Accès interdit' })
