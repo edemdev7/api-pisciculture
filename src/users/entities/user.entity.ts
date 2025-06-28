@@ -8,6 +8,7 @@ import { MouvementStockAliment } from '../../aliments/entities/mouvement-stock-a
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from './role.entity';
 import { Region } from '../../regions/region.entity';
+import { ActivitePisciculteur } from './activite-pisciculteur.entity';
 
 export enum UserStatus {
     ACTIF = 'actif',
@@ -48,9 +49,29 @@ export class User {
     @Column({
         type: 'enum',
         enum: UserStatus,
-        default: UserStatus.ACTIF
+        default: UserStatus.INACTIF
     })
     status: UserStatus;
+
+    @ApiProperty({ description: 'Indique si le compte est actif (pour les pisciculteurs)' })
+    @Column({ default: false })
+    compte_actif: boolean;
+
+    @ApiProperty({ description: 'Indique si le pisciculteur est éligible au programme Soa' })
+    @Column({ default: false })
+    eligible_soa: boolean;
+
+    @ApiProperty({ description: 'Date d\'activation du compte par l\'admin' })
+    @Column({ nullable: true })
+    date_activation: Date;
+
+    @ApiProperty({ description: 'Admin qui a activé le compte' })
+    @Column({ nullable: true })
+    admin_activation: string;
+
+    @ApiProperty({ description: 'Raison de la désactivation (si applicable)' })
+    @Column({ nullable: true })
+    raison_desactivation: string;
 
     @ApiProperty({ description: 'Code OTP pour la vérification' })
     @Column({ nullable: true })
@@ -93,6 +114,9 @@ export class User {
 
     @OneToMany(() => MouvementStockAliment, mouvement => mouvement.pisciculteur)
     mouvements: MouvementStockAliment[];
+
+    @OneToMany(() => ActivitePisciculteur, activite => activite.pisciculteur)
+    activites: ActivitePisciculteur[];
 
     @ManyToOne(() => Region, region => region.users, { nullable: true, eager: true })
     region: Region;

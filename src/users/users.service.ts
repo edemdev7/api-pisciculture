@@ -7,6 +7,7 @@ import { CreatePisciculteurDto } from './dto/create-pisciculteur.dto';
 import { UpdatePisciculteurDto } from './dto/update-pisciculteur.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePisciculteurStatusDto } from './dto/update-pisciculteur-status.dto';
 import { RoleEnum } from './enums/role.enum';
 import * as bcrypt from 'bcrypt';
 import { Region } from '../regions/region.entity';
@@ -52,7 +53,8 @@ export class UsersService {
             ...createPisciculteurDto,
             username,
             roleId: role.id,
-            status: UserStatus.ACTIF,
+            status: UserStatus.INACTIF,
+            compte_actif: false,
         });
 
         const user = this.usersRepository.create({
@@ -60,7 +62,8 @@ export class UsersService {
             username,
             region,
             roleId: role.id,
-            status: UserStatus.ACTIF,
+            status: UserStatus.INACTIF,
+            compte_actif: false,
         });
 
         console.log('User object before save:', user);
@@ -75,7 +78,29 @@ export class UsersService {
         }
         return this.usersRepository.find({
             where: { roleId: role.id },
-            relations: ['role'],
+            relations: ['role', 'region'],
+        });
+    }
+
+    async findPisciculteursByStatus(status: UserStatus) {
+        const role = await this.rolesRepository.findOne({ where: { code: 'PISCICULTEUR' } });
+        if (!role) {
+            throw new NotFoundException('Rôle PISCICULTEUR non trouvé');
+        }
+        return this.usersRepository.find({
+            where: { roleId: role.id, status },
+            relations: ['role', 'region'],
+        });
+    }
+
+    async findPisciculteursEligiblesSoa() {
+        const role = await this.rolesRepository.findOne({ where: { code: 'PISCICULTEUR' } });
+        if (!role) {
+            throw new NotFoundException('Rôle PISCICULTEUR non trouvé');
+        }
+        return this.usersRepository.find({
+            where: { roleId: role.id, eligible_soa: true, compte_actif: true },
+            relations: ['role', 'region'],
         });
     }
 
@@ -86,7 +111,7 @@ export class UsersService {
         }
         const user = await this.usersRepository.findOne({
             where: { id, roleId: role.id },
-            relations: ['role'],
+            relations: ['role', 'region'],
         });
 
         if (!user) {
@@ -94,6 +119,28 @@ export class UsersService {
         }
 
         return user;
+    }
+
+    async updatePisciculteurStatus(id: number, updateStatusDto: UpdatePisciculteurStatusDto, adminUsername: string) {
+        const user = await this.findOnePisciculteur(id);
+
+        user.compte_actif = updateStatusDto.compte_actif;
+        
+        if (updateStatusDto.eligible_soa !== undefined) {
+            user.eligible_soa = updateStatusDto.eligible_soa;
+        }
+
+        if (updateStatusDto.compte_actif) {
+            user.status = UserStatus.ACTIF;
+            user.date_activation = new Date();
+            user.admin_activation = adminUsername;
+            user.raison_desactivation = null;
+        } else {
+            user.status = UserStatus.INACTIF;
+            user.raison_desactivation = updateStatusDto.raison_desactivation || 'Désactivé par l\'administrateur';
+        }
+
+        return this.usersRepository.save(user);
     }
 
     async updatePisciculteur(id: number, updatePisciculteurDto: UpdatePisciculteurDto) {
