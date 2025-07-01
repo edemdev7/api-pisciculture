@@ -16,6 +16,9 @@ import { DepartementsModule } from './departements/departements.module';
 import { RegionsModule } from './regions/regions.module';
 import { AvancesIntrantsModule } from './avances-intrants/avances-intrants.module';
 import { CalendrierModule } from './calendrier/calendrier.module';
+import { RecoltesModule } from './recoltes/recoltes.module';
+import { MaladiesModule } from './maladies/maladies.module';
+import { StocksModule } from './stocks/stocks.module';
 
 @Module({
     imports: [
@@ -51,6 +54,9 @@ import { CalendrierModule } from './calendrier/calendrier.module';
         RegionsModule,
         AvancesIntrantsModule,
         CalendrierModule,
+        RecoltesModule,
+        MaladiesModule,
+        StocksModule,
     ],
 })
 export class AppModule {}

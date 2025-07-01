@@ -15,12 +15,15 @@ import { Maladie } from '../maladies/entities/maladie.entity';
 import { Diagnostic } from '../maladies/entities/diagnostic.entity';
 import { Traitement } from '../maladies/entities/traitement.entity';
 import { Permission } from '../users/entities/permission.entity';
+import { ActivitePisciculteur } from '../users/entities/activite-pisciculteur.entity';
 import { AvanceIntrant } from '../avances-intrants/entities/avance-intrant.entity';
 import { Remboursement } from '../avances-intrants/entities/remboursement.entity';
 import { Dette } from '../avances-intrants/entities/dette.entity';
 import { Region } from '../regions/region.entity';
 import { Departement } from '../departements/departement.entity';
 import { EvenementCalendrier } from '../calendrier/entities/evenement-calendrier.entity';
+import { PerformanceBassin } from '../bassins/entities/performance-bassin.entity';
+import { PecheControle } from '../bassins/entities/peche-controle.entity';
 config();
 
 export const AppDataSource = new DataSource({
@@ -47,12 +50,15 @@ export const AppDataSource = new DataSource({
         Traitement,
         Role,
         Permission,
+        ActivitePisciculteur,
         AvanceIntrant,
         Remboursement,
         Dette,
         Region,
         Departement,
-        EvenementCalendrier
+        EvenementCalendrier,
+        PerformanceBassin,
+        PecheControle
     ],
     synchronize: true,
     logging: true

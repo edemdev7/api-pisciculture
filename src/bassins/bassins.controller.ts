@@ -20,8 +20,8 @@ export class BassinsController {
     @ApiOperation({ summary: 'Créer un nouveau bassin' })
     @ApiResponse({ status: 201, description: 'Bassin créé avec succès' })
     @ApiBody({ type: CreateBassinDto })
-    create(@Body() createBassinDto: CreateBassinDto) {
-        return this.bassinsService.create(createBassinDto);
+    create(@Body() createBassinDto: CreateBassinDto, @Request() req) {
+        return this.bassinsService.create(createBassinDto, req.user.id);
     }
 
     @Get()
@@ -127,5 +127,23 @@ export class BassinsController {
     @ApiResponse({ status: 200, description: 'Statistiques des bassins récupérées' })
     getBassinsSummary() {
         return this.bassinsService.getBassinsSummary();
+    }
+
+    @Get(':id/pisciculteur')
+    @Roles(Role.ADMIN, Role.PISCICULTEUR)
+    @ApiOperation({ summary: 'Récupérer le pisciculteur assigné à un bassin' })
+    @ApiResponse({ status: 200, description: 'Pisciculteur assigné récupéré avec succès' })
+    @ApiResponse({ status: 404, description: 'Bassin non trouvé ou aucun pisciculteur assigné' })
+    getPisciculteurByBassin(@Param('id') id: string) {
+        return this.bassinsService.getPisciculteurByBassin(+id);
+    }
+
+    @Get(':id/avec-pisciculteur')
+    @Roles(Role.ADMIN, Role.PISCICULTEUR)
+    @ApiOperation({ summary: 'Récupérer un bassin avec les informations du pisciculteur assigné' })
+    @ApiResponse({ status: 200, description: 'Bassin avec pisciculteur récupéré avec succès' })
+    @ApiResponse({ status: 404, description: 'Bassin non trouvé' })
+    getBassinWithPisciculteur(@Param('id') id: string) {
+        return this.bassinsService.getBassinWithPisciculteur(+id);
     }
 } 

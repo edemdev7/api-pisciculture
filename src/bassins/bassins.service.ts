@@ -9,6 +9,7 @@ import { AssignBassinDto } from './dto/assign-bassin.dto';
 import { User } from '../users/entities/user.entity';
 import { Region } from '../regions/region.entity';
 import { BassinStatus } from './entities/bassin.entity';
+
 @Injectable()
 export class BassinsService {
   constructor(
@@ -22,32 +23,56 @@ export class BassinsService {
     private regionsRepository: Repository<Region>,
   ) {}
 
-  async create(createBassinDto: CreateBassinDto) {
+  async create(createBassinDto: CreateBassinDto, adminId: number) {
     const region = await this.regionsRepository.findOne({ where: { id: createBassinDto.region_id } });
     if (!region) {
       throw new NotFoundException('Région non trouvée');
     }
-    const bassin = this.bassinRepository.create({ ...createBassinDto, region });
+    const bassin = this.bassinRepository.create({ 
+      ...createBassinDto, 
+      region,
+      admin_id: adminId
+    });
     return await this.bassinRepository.save(bassin);
   }
 
   async findAll() {
-    return await this.bassinRepository.find({
-      relations: ['pisciculteurs', 'pisciculteurs.pisciculteur']
+    const bassins = await this.bassinRepository.find({
+      relations: ['region', 'performances', 'peches_controle']
     });
+
+    // Pour chaque bassin, récupérer le pisciculteur assigné
+    const bassinsAvecPisciculteurs = await Promise.all(
+      bassins.map(async (bassin) => {
+        const pisciculteur = await this.getPisciculteurByBassin(bassin.id);
+        return {
+          ...bassin,
+          pisciculteur_assigne: pisciculteur
+        };
+      })
+    );
+
+    return bassinsAvecPisciculteurs;
   }
 
   async findOne(id: number) {
     const bassin = await this.bassinRepository.findOne({
       where: { id },
-      relations: ['pisciculteurs', 'pisciculteurs.pisciculteur']
+      relations: ['region', 'performances', 'peches_controle']
     });
 
     if (!bassin) {
       throw new NotFoundException(`Bassin #${id} non trouvé`);
     }
 
-    return bassin;
+    // Récupérer le pisciculteur assigné
+    const pisciculteur = await this.getPisciculteurByBassin(id);
+
+    // Retourner le bassin avec le pisciculteur assigné (peut être null)
+    return {
+      ...bassin,
+      pisciculteur_assigne: pisciculteur
+    };
   }
 
   async update(id: number, updateBassinDto: UpdateBassinDto) {
@@ -94,6 +119,7 @@ export class BassinsService {
     const assignment = this.pisciculteurBassinRepository.create({
       bassin_id: assignBassinDto.bassin_id,
       pisciculteur_id: assignBassinDto.pisciculteur_id,
+      date_affectation: new Date(),
       statut: PisciculteurBassinStatus.ACTIF
     });
 
@@ -114,6 +140,7 @@ export class BassinsService {
     }
 
     assignment.statut = PisciculteurBassinStatus.TERMINE;
+    assignment.date_fin_affectation = new Date();
     await this.pisciculteurBassinRepository.save(assignment);
   }
 
@@ -126,35 +153,122 @@ export class BassinsService {
       relations: ['bassin']
     });
 
-    return assignments.map(assignment => assignment.bassin);
+    const bassins = assignments.map(assignment => assignment.bassin);
+    
+    // Ajouter le pisciculteur assigné à chaque bassin
+    const bassinsAvecPisciculteurs = await Promise.all(
+      bassins.map(async (bassin) => {
+        const pisciculteur = await this.getPisciculteurByBassin(bassin.id);
+        return {
+          ...bassin,
+          pisciculteur_assigne: pisciculteur
+        };
+      })
+    );
+
+    return bassinsAvecPisciculteurs;
   }
 
   async getBassinsByPisciculteur(pisciculteurId: number): Promise<Bassin[]> {
-    return await this.bassinRepository.find({
-      where: { pisciculteur: { id: pisciculteurId } },
-      relations: ['pisciculteur', 'region', 'performances', 'peches_controle'],
+    const assignments = await this.pisciculteurBassinRepository.find({
+      where: {
+        pisciculteur_id: pisciculteurId,
+        statut: PisciculteurBassinStatus.ACTIF
+      },
+      relations: ['bassin', 'bassin.region', 'bassin.performances', 'bassin.peches_controle']
     });
+
+    const bassins = assignments.map(assignment => assignment.bassin);
+    
+    // Ajouter le pisciculteur assigné à chaque bassin
+    const bassinsAvecPisciculteurs = await Promise.all(
+      bassins.map(async (bassin) => {
+        const pisciculteur = await this.getPisciculteurByBassin(bassin.id);
+        return {
+          ...bassin,
+          pisciculteur_assigne: pisciculteur
+        };
+      })
+    );
+
+    return bassinsAvecPisciculteurs;
   }
 
   async getBassinsWithoutPisciculteur(): Promise<Bassin[]> {
-    return await this.bassinRepository.find({
-      where: { pisciculteur: IsNull() },
-      relations: ['region'],
-    });
+    // Get all bassins that don't have active assignments
+    const assignedBassinIds = await this.pisciculteurBassinRepository
+      .createQueryBuilder('pb')
+      .select('pb.bassin_id')
+      .where('pb.statut = :status', { status: PisciculteurBassinStatus.ACTIF })
+      .getRawMany();
+
+    const assignedIds = assignedBassinIds.map(item => item.pb_bassin_id);
+    
+    let bassins;
+    if (assignedIds.length === 0) {
+      bassins = await this.bassinRepository.find({
+        relations: ['region'],
+      });
+    } else {
+      bassins = await this.bassinRepository
+        .createQueryBuilder('bassin')
+        .leftJoinAndSelect('bassin.region', 'region')
+        .where('bassin.id NOT IN (:...ids)', { ids: assignedIds })
+        .getMany();
+    }
+    
+    // Ajouter le pisciculteur assigné à chaque bassin (sera null pour ces bassins)
+    const bassinsAvecPisciculteurs = await Promise.all(
+      bassins.map(async (bassin) => {
+        const pisciculteur = await this.getPisciculteurByBassin(bassin.id);
+        return {
+          ...bassin,
+          pisciculteur_assigne: pisciculteur
+        };
+      })
+    );
+
+    return bassinsAvecPisciculteurs;
   }
 
   async getBassinsByStatus(status: BassinStatus): Promise<Bassin[]> {
-    return await this.bassinRepository.find({
+    const bassins = await this.bassinRepository.find({
       where: { statut: status },
-      relations: ['pisciculteur', 'region'],
+      relations: ['region'],
     });
+    
+    // Ajouter le pisciculteur assigné à chaque bassin
+    const bassinsAvecPisciculteurs = await Promise.all(
+      bassins.map(async (bassin) => {
+        const pisciculteur = await this.getPisciculteurByBassin(bassin.id);
+        return {
+          ...bassin,
+          pisciculteur_assigne: pisciculteur
+        };
+      })
+    );
+
+    return bassinsAvecPisciculteurs;
   }
 
   async getBassinsByRegion(regionId: number): Promise<Bassin[]> {
-    return await this.bassinRepository.find({
+    const bassins = await this.bassinRepository.find({
       where: { region: { id: regionId } },
-      relations: ['pisciculteur', 'region'],
+      relations: ['region'],
     });
+    
+    // Ajouter le pisciculteur assigné à chaque bassin
+    const bassinsAvecPisciculteurs = await Promise.all(
+      bassins.map(async (bassin) => {
+        const pisciculteur = await this.getPisciculteurByBassin(bassin.id);
+        return {
+          ...bassin,
+          pisciculteur_assigne: pisciculteur
+        };
+      })
+    );
+
+    return bassinsAvecPisciculteurs;
   }
 
   async getBassinsSummary(): Promise<any> {
@@ -162,7 +276,14 @@ export class BassinsService {
     const bassinsActifs = await this.bassinRepository.count({ where: { statut: BassinStatus.ACTIF } });
     const bassinsInactifs = await this.bassinRepository.count({ where: { statut: BassinStatus.INACTIF } });
     const bassinsEnMaintenance = await this.bassinRepository.count({ where: { statut: BassinStatus.EN_MAINTENANCE } });
-    const bassinsSansPisciculteur = await this.bassinRepository.count({ where: { pisciculteur: IsNull() } });
+    
+    // Count bassins without active pisciculteur assignments
+    const assignedBassinIds = await this.pisciculteurBassinRepository
+      .createQueryBuilder('pb')
+      .select('pb.bassin_id')
+      .where('pb.statut = :status', { status: PisciculteurBassinStatus.ACTIF })
+      .getRawMany();
+    const bassinsSansPisciculteur = totalBassins - assignedBassinIds.length;
 
     return {
       total: totalBassins,
@@ -170,6 +291,36 @@ export class BassinsService {
       inactifs: bassinsInactifs,
       en_maintenance: bassinsEnMaintenance,
       sans_pisciculteur: bassinsSansPisciculteur,
+    };
+  }
+
+  async getPisciculteurByBassin(bassinId: number): Promise<User | null> {
+    const assignment = await this.pisciculteurBassinRepository.findOne({
+      where: {
+        bassin_id: bassinId,
+        statut: PisciculteurBassinStatus.ACTIF
+      },
+      relations: ['pisciculteur', 'pisciculteur.role', 'pisciculteur.region']
+    });
+
+    return assignment ? assignment.pisciculteur : null;
+  }
+
+  async getBassinWithPisciculteur(bassinId: number): Promise<any> {
+    const bassin = await this.bassinRepository.findOne({
+      where: { id: bassinId },
+      relations: ['region', 'performances', 'peches_controle']
+    });
+
+    if (!bassin) {
+      throw new NotFoundException(`Bassin #${bassinId} non trouvé`);
+    }
+
+    const pisciculteur = await this.getPisciculteurByBassin(bassinId);
+
+    return {
+      ...bassin,
+      pisciculteur_assigne: pisciculteur
     };
   }
 } 
